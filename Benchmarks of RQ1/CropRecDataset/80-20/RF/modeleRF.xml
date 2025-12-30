@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here 
+</declaration>
+	<template>
+		<name x="5" y="5">ML</name>
+		<declaration>// --- Variables de contrôle ---
+int Hp = 10; 
+int Hmax = 10000;
+int Hmin=10;
+int Pm = 9600;
+int Pm0 = 9600;
+int Pmth = 9900;
+int Hps = 100;
+int it = 1; 
+int Itmax = 5;
+int PmOpt = 9600;
+int HpOpt = 10;
+clock t;
+
+void UpdateParams() {
+   
+
+        if (it &lt; Itmax) {
+            it = it + 1;
+            Hp = Hp + Hps;
+        } else {
+            Hps = Hps + 1;
+            Hp = Hp + Hps;
+            it = 0;
+        }
+        
+        Pm0 = Pm;
+        
+    }
+
+
+void UpdateStep() {
+    
+        Pm0 = Pm;
+        if (Pm &gt; PmOpt) {
+            PmOpt = Pm;
+            HpOpt = Hp;
+        }
+
+        it = 0;
+
+    }
+</declaration>
+		<location id="id0" x="-518" y="-42">
+			<name x="-509" y="-33">Start</name>
+		</location>
+		<location id="id1" x="-8" y="43">
+			<name x="-27" y="59">Final</name>
+		</location>
+		<location id="id2" x="-8" y="-42">
+			<name x="-42" y="-25">Update</name>
+			<label kind="invariant" x="26" y="-76">t &lt;= 1</label>
+		</location>
+		<location id="id3" x="-1011" y="-42">
+			<name x="-1028" y="-25">Wait</name>
+			<label kind="invariant" x="-1062" y="-76">t &lt;= 1</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id4">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-450" y="9">Pm &gt;= Pmth || Hp &gt;= Hmax</label>
+			<nail x="-518" y="43"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-807" y="-161">t = 0</label>
+			<nail x="-1011" y="-135"/>
+			<nail x="-526" y="-135"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-288" y="-161">t = 0</label>
+			<nail x="-8" y="-135"/>
+			<nail x="-518" y="-135"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-977" y="-93">Pm &lt; Pmth &amp;&amp; Hp &lt; Hmax &amp;&amp; Pm == Pm0</label>
+			<label kind="assignment" x="-832" y="-67">UpdateParams()</label>
+		</transition>
+		<transition id="id8">
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-458" y="-93">Pm &lt; Pmth &amp;&amp; Hp &lt; Hmax &amp;&amp; Pm != Pm0</label>
+			<label kind="assignment" x="-322" y="-67">UpdateStep()</label>
+		</transition>
+	</template>
+	<system>system ML;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; ML.Test</formula>
+			<comment/>
+			<result outcome="failure" type="quality" timestamp="2023-11-30 12:48:00 +0100">
+			</result>
+		</query>
+		<query>
+			<formula>E&lt;&gt; ML.Final</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2023-11-30 12:32:19 +0100">
+			</result>
+		</query>
+	</queries>
+</nta>
